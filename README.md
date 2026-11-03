@@ -18,7 +18,10 @@ EQUAL FUTURE is a student initiative platform built as a mobile-friendly install
 - Job and internship listings
 - Opportunity applications and a student application history
 - Admin dashboard for publishing courses, video lessons, assignments, announcements and opportunities; approving mentors; issuing certificates; and reviewing applications
-- Student lesson library with YouTube/resource links and per-account lesson completion
+- Student lesson library with YouTube or uploaded video/resource links and per-account lesson completion
+- Quiz builder with single-choice and multiple-choice questions, hidden answer keys, automatic scoring, pass/fail results and admin attempt review
+- Separate admin-only founder control center with student directory, content management and quiz analytics
+- Admin uploads of course videos/resources (up to 50 MB per file) through Supabase Storage
 - Assignment submissions with admin review status and feedback
 - Published announcements for signed-in students
 - Installable PWA shell with service worker
@@ -52,11 +55,11 @@ Do not promote an existing student account unless it is explicitly the intended 
 
 ## Current readiness notes
 - The database currently has no published courses, mentors, certificates, or opportunities; admins must add verified content before students can see it.
-- The admin account still needs to be registered and explicitly assigned the admin role.
+- The verified owner account is already assigned the admin role; the admin-only control center checks that role from the database.
 - The general progress slider remains device-local; individual video lesson completion is stored in Supabase per student.
-- Lesson videos are added by the admin as YouTube URLs; EQUAL FUTURE does not host raw video files.
-- Email/push notifications, payment flows, automatic grading, and automated certificate PDF generation are not implemented.
-- Assignment submissions support text/URL links and admin review; file uploads and mentor chat are not implemented.
+- Lesson videos can be linked from YouTube or uploaded as MP4/WebM files up to 50 MB; PDFs and images can be uploaded as lesson resources. Supabase Storage is used for uploaded files.
+- Quiz grading is automatic. Email/push notifications, payment flows, and automated certificate PDF generation are not implemented.
+- Assignment submissions support text/URL links and admin review. Student file uploads and mentor chat are not implemented.
 - Test sign-up, login, profile save, course enrollment, project save, opportunity application, and admin actions before inviting students.
 
 ## PWA
