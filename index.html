@@ -74,6 +74,11 @@ footer{background:#06101c;border-top:1px solid rgba(111,159,198,.18);color:#91a9
 <div class="panel"><h3 class="green">Welcome to your dashboard</h3><p class="small" id="dashboardWelcome">Log in to load your student dashboard.</p><p class="small">Your profile and account are connected to the EQUAL FUTURE database. Learning progress on this version is stored on this device.</p></div>
 </section>
 <section id="learning"><h2>Learning Academy</h2><p class="sub">Choose your engineering branch, year and semester. Open a subject to study topic-wise lectures, notes, assignments and quizzes.</p>
+<div class="panel" style="max-width:1000px;margin:0 auto 18px">
+ <h3 class="green">Search EQUAL FUTURE</h3><p class="small">Find subjects, topics, lectures, assignments, quizzes and opportunities in one place.</p>
+ <label for="studentGlobalSearch">What do you want to learn or find?</label><input id="studentGlobalSearch" type="search" placeholder="Try: Java, arrays, internship, HTML..." autocomplete="off">
+ <div id="studentSearchResults" class="data-list" aria-live="polite"></div><p id="studentSearchStatus" class="module-status">Start typing to search the student library.</p>
+</div>
 <div class="panel learning-path-panel">
  <div class="learning-path-title"><span class="green">01</span><div><h3>Choose your learning path</h3><p class="small">Your branch → year → semester</p></div></div>
  <div class="learning-filters">
@@ -271,6 +276,7 @@ function updateProgress(value){
 el("progressRange").addEventListener("input",e=>updateProgress(e.target.value));
 ["learningBranch","learningYear","learningSemester"].forEach(id=>el(id)?.addEventListener("change",renderCoursesWithEnrollments));
 el("courseSearch")?.addEventListener("input",renderCoursesWithEnrollments);
+el("studentGlobalSearch")?.addEventListener("input",searchStudentLibrary);
 el("clearSelectedSubject")?.addEventListener("click",async()=>{selectedLearningCourseId=null;el("selectedSubjectTitle").textContent="No subject selected";el("selectedSubjectPath").textContent="Choose a subject above to see its topics and study material.";el("clearSelectedSubject").hidden=true;await renderLearningExtras();await renderQuizLibrary();});
 try{el("progressRange").value=localStorage.getItem("equalFutureProgress")||"0";updateProgress(el("progressRange").value);}catch(e){}
 client.auth.onAuthStateChange((_event,session)=>{
@@ -318,6 +324,45 @@ el("adminIssueCert")?.addEventListener("click",async()=>{
 el("addProjectBtn")?.addEventListener("click",async()=>{
  try{if(!currentUser)throw new Error("Log in first.");const title=el("projectTitle").value.trim();if(!title)throw new Error("Project title is required.");const {error}=await client.from("projects").insert({student_id:currentUser.id,title,description:el("projectDescription").value.trim(),project_link:el("projectLink").value.trim(),status:"submitted"});if(error)throw error;message("projectActionStatus","Project saved.");["projectTitle","projectDescription","projectLink"].forEach(id=>el(id).value="");await renderTable("projects","projectsList","projectsStatus",true);}catch(e){message("projectActionStatus",e.message,true);}
 });
+async function searchStudentLibrary(){
+ const input=el("studentGlobalSearch"),box=el("studentSearchResults"),status=el("studentSearchStatus");
+ if(!input||!box||!status)return;
+ const term=input.value.trim().toLowerCase();box.replaceChildren();
+ if(term.length<2){status.textContent="Type at least 2 characters to search.";return;}
+ if(!currentUser){status.textContent="Log in to search the student library.";return;}
+ status.textContent="Searching...";
+ const specs=[
+  {table:"courses",select:"id,title,description,branch,academic_year,semester",label:"Subject",match:r=>[r.title,r.description,r.branch,r.academic_year,r.semester].join(" ")},
+  {table:"course_lessons",select:"id,title,topic,description,course_id",label:"Lecture",match:r=>[r.title,r.topic,r.description].join(" ")},
+  {table:"course_assignments",select:"id,title,topic,instructions,course_id",label:"Assignment",match:r=>[r.title,r.topic,r.instructions].join(" ")},
+  {table:"quizzes",select:"id,title,topic,description,course_id",label:"Quiz",match:r=>[r.title,r.topic,r.description].join(" ")},
+  {table:"opportunities",select:"id,title,organization,type,location,description",label:"Opportunity",match:r=>[r.title,r.organization,r.type,r.location,r.description].join(" ")}
+ ];
+ const responses=await Promise.all(specs.map(x=>client.from(x.table).select(x.select).eq("published",true).limit(150)));
+ let total=0;
+ for(let i=0;i<specs.length;i++){
+  const spec=specs[i],res=responses[i];if(res.error){console.warn("Student search "+spec.table,res.error.message);continue;}
+  (res.data||[]).filter(row=>spec.match(row).toLowerCase().includes(term)).slice(0,12).forEach(row=>{
+   total++;const card=document.createElement("article");card.className="data-item";
+   const h=document.createElement("h4");h.textContent=spec.label+" · "+row.title;card.appendChild(h);
+   const p=document.createElement("p");p.textContent=spec.label==="Subject"?[row.branch,row.academic_year,row.semester].filter(Boolean).join(" • "):[row.topic,row.organization,row.type,row.location].filter(Boolean).join(" • ");card.appendChild(p);
+   const b=document.createElement("button");b.className="btn";b.textContent=spec.label==="Opportunity"?"View opportunities":"Open in Learning Academy";
+   b.addEventListener("click",async()=>{
+    if(spec.label==="Opportunity"){el("opportunities").scrollIntoView({behavior:"smooth"});return;}
+    const courseId=spec.label==="Subject"?row.id:row.course_id;if(!courseId){status.textContent="This item is not linked to a subject yet.";return;}
+    const {data:course}=await client.from("courses").select("id,title,branch,academic_year,semester").eq("id",courseId).maybeSingle();
+    if(!course){status.textContent="The linked subject could not be found.";return;}
+    selectedLearningCourseId=course.id;el("selectedSubjectTitle").textContent=course.title;
+    el("selectedSubjectPath").textContent=[course.branch,course.academic_year,course.semester].filter(Boolean).join(" › ");
+    el("clearSelectedSubject").hidden=false;await renderLearningExtras();await renderQuizLibrary();
+    el("selectedSubjectTitle").scrollIntoView({behavior:"smooth",block:"center"});
+   });
+   card.appendChild(b);box.appendChild(card);
+  });
+ }
+ status.textContent=total?total+" matching result(s).":"No results found. Try another keyword.";
+}
+
 async function renderCoursesWithEnrollments(){
  const box=el("coursesList");if(!box||!currentUser)return;box.replaceChildren();
  const {data,error}=await client.from("courses").select("id,title,description,level,branch,academic_year,semester").eq("published",true).order("branch").order("academic_year").order("semester").order("title");
