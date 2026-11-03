@@ -58,6 +58,12 @@ create table if not exists public.applications (
  created_at timestamptz not null default now(), unique(student_id, opportunity_id)
 );
 
+create or replace function public.is_admin()
+returns boolean language sql stable security definer set search_path = ''
+as $
+  select exists(select 1 from public.profiles where id = auth.uid() and role = 'admin');
+$;
+
 alter table public.profiles enable row level security;
 alter table public.courses enable row level security;
 alter table public.mentors enable row level security;
@@ -68,7 +74,7 @@ alter table public.applications enable row level security;
 
 -- Profiles: users can read/update only themselves; role cannot be changed by client policies.
 drop policy if exists "profile read own" on public.profiles;
-create policy "profile read own" on public.profiles for select to authenticated using (id = auth.uid() or exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='admin'));
+create policy "profile read own" on public.profiles for select to authenticated using (id = auth.uid() or public.is_admin());
 drop policy if exists "profile insert own" on public.profiles;
 create policy "profile insert own" on public.profiles for insert to authenticated with check (id=auth.uid() and role='student');
 drop policy if exists "profile update own fields" on public.profiles;
@@ -76,32 +82,32 @@ create policy "profile update own fields" on public.profiles for update to authe
 
 -- Published learning content is readable by signed-in students; admins manage it.
 drop policy if exists "published courses read" on public.courses;
-create policy "published courses read" on public.courses for select to authenticated using (published or exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "published courses read" on public.courses for select to authenticated using (published or public.is_admin());
 drop policy if exists "admin manage courses" on public.courses;
-create policy "admin manage courses" on public.courses for all to authenticated using (exists(select 1 from public.profiles where id=auth.uid() and role='admin')) with check (exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "admin manage courses" on public.courses for all to authenticated using (public.is_admin()) with check (public.is_admin());
 drop policy if exists "published mentors read" on public.mentors;
-create policy "published mentors read" on public.mentors for select to authenticated using (published or exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "published mentors read" on public.mentors for select to authenticated using (published or public.is_admin());
 drop policy if exists "admin manage mentors" on public.mentors;
-create policy "admin manage mentors" on public.mentors for all to authenticated using (exists(select 1 from public.profiles where id=auth.uid() and role='admin')) with check (exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "admin manage mentors" on public.mentors for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 -- Student-owned records remain private; admins may review them.
 drop policy if exists "students read own projects" on public.projects;
-create policy "students read own projects" on public.projects for select to authenticated using (student_id=auth.uid() or exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "students read own projects" on public.projects for select to authenticated using (student_id=auth.uid() or public.is_admin());
 drop policy if exists "students create own projects" on public.projects;
 create policy "students create own projects" on public.projects for insert to authenticated with check (student_id=auth.uid());
 drop policy if exists "students update own projects" on public.projects;
 create policy "students update own projects" on public.projects for update to authenticated using (student_id=auth.uid()) with check (student_id=auth.uid());
 drop policy if exists "students read own certificates" on public.certificates;
-create policy "students read own certificates" on public.certificates for select to authenticated using (student_id=auth.uid() or exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "students read own certificates" on public.certificates for select to authenticated using (student_id=auth.uid() or public.is_admin());
 drop policy if exists "admin manage certificates" on public.certificates;
-create policy "admin manage certificates" on public.certificates for all to authenticated using (exists(select 1 from public.profiles where id=auth.uid() and role='admin')) with check (exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "admin manage certificates" on public.certificates for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 drop policy if exists "published opportunities read" on public.opportunities;
-create policy "published opportunities read" on public.opportunities for select to authenticated using (published or exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "published opportunities read" on public.opportunities for select to authenticated using (published or public.is_admin());
 drop policy if exists "admin manage opportunities" on public.opportunities;
-create policy "admin manage opportunities" on public.opportunities for all to authenticated using (exists(select 1 from public.profiles where id=auth.uid() and role='admin')) with check (exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "admin manage opportunities" on public.opportunities for all to authenticated using (public.is_admin()) with check (public.is_admin());
 drop policy if exists "students read applications" on public.applications;
-create policy "students read applications" on public.applications for select to authenticated using (student_id=auth.uid() or exists(select 1 from public.profiles where id=auth.uid() and role='admin'));
+create policy "students read applications" on public.applications for select to authenticated using (student_id=auth.uid() or public.is_admin());
 drop policy if exists "students submit applications" on public.applications;
 create policy "students submit applications" on public.applications for insert to authenticated with check (student_id=auth.uid() and exists(select 1 from public.opportunities where id=opportunity_id and published));
 
