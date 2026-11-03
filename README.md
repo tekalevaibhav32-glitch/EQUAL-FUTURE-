@@ -17,7 +17,10 @@ EQUAL FUTURE is a student initiative platform built as a mobile-friendly install
 - Certificates issued to student accounts
 - Job and internship listings
 - Opportunity applications and a student application history
-- Admin dashboard for publishing courses/opportunities, approving mentors, issuing certificates, and reviewing applications
+- Admin dashboard for publishing courses, video lessons, assignments, announcements and opportunities; approving mentors; issuing certificates; and reviewing applications
+- Student lesson library with YouTube/resource links and per-account lesson completion
+- Assignment submissions with admin review status and feedback
+- Published announcements for signed-in students
 - Installable PWA shell with service worker
 
 ## Architecture
@@ -50,8 +53,10 @@ Do not promote an existing student account unless it is explicitly the intended 
 ## Current readiness notes
 - The database currently has no published courses, mentors, certificates, or opportunities; admins must add verified content before students can see it.
 - The admin account still needs to be registered and explicitly assigned the admin role.
-- Learning progress is currently stored on the user's device, not synced to the cloud.
-- Email notifications, payment flows, and automated certificate PDF generation are not implemented.
+- The general progress slider remains device-local; individual video lesson completion is stored in Supabase per student.
+- Lesson videos are added by the admin as YouTube URLs; EQUAL FUTURE does not host raw video files.
+- Email/push notifications, payment flows, automatic grading, and automated certificate PDF generation are not implemented.
+- Assignment submissions support text/URL links and admin review; file uploads and mentor chat are not implemented.
 - Test sign-up, login, profile save, course enrollment, project save, opportunity application, and admin actions before inviting students.
 
 ## PWA
