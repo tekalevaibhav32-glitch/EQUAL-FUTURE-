@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101827">
 <title>EQUAL FUTURE</title>
+  <link rel="manifest" href="/manifest.webmanifest">
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#101827;color:white}
@@ -22,6 +23,13 @@ h1{font-size:45px;margin:10px}
 footer{text-align:center;padding:25px;color:#aab6c8;background:#172235}
 </style>
 </head>
+  <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js");
+  });
+}
+  </script>
 <body>
 <header><div class="logo">EQUAL FUTURE</div><div>Learn • Build • Earn</div></header>
 <section class="hero">
