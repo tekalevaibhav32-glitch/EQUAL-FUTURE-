@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "equal-future-v9";
+const CACHE_NAME = "equal-future-v10";
 
 self.addEventListener("install", event => {
   event.waitUntil(
