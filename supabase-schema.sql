@@ -116,4 +116,6 @@ grant select, insert, update on public.profiles to authenticated;
 grant select on public.courses, public.mentors, public.opportunities to authenticated;
 grant insert, select, update on public.projects to authenticated;
 grant select on public.certificates to authenticated;
-grant select, insert on public.applications to authenticated;
+grant select, insert, update, delete on public.courses, public.mentors, public.opportunities to authenticated;
+grant select, insert, update, delete on public.projects, public.certificates to authenticated;
+grant select, insert, update on public.applications to authenticated;
