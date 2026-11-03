@@ -60,9 +60,9 @@ create table if not exists public.applications (
 
 create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = ''
-as $
+as $$
   select exists(select 1 from public.profiles where id = auth.uid() and role = 'admin');
-$;
+$$;
 
 alter table public.profiles enable row level security;
 alter table public.courses enable row level security;
