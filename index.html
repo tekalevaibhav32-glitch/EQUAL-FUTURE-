@@ -28,7 +28,7 @@ label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textare
 </style>
 </head>
 <body>
-<header><div class="logo">EQUAL FUTURE</div><nav><a href="#home">Home</a><a href="#how">How It Works</a><a href="#hub">Student Hub</a><a href="#opportunities">Opportunities</a><a href="#dashboard">Dashboard</a><a href="#about">About</a></nav></header>
+<header><div class="logo">EQUAL FUTURE</div><nav><a href="#home">Home</a><a href="#how">How It Works</a><a href="#hub">Student Hub</a><a href="#opportunities">Opportunities</a><a href="#applications">My Applications</a><a href="#dashboard">Dashboard</a><a href="#about">About</a></nav></header>
 <main>
 <div class="hero" id="home"><div class="tag">YOUR FUTURE STARTS HERE</div><h1>Learn. <span class="green">Build.</span><br>Earn. Grow.</h1><p>A student-powered initiative helping young people learn practical skills, build confidence and explore career opportunities.</p><a class="btn" href="#hub">Explore Student Hub</a><a class="btn blue" href="#account">Create Student Account</a></div>
 <section><h2>What We Offer</h2><div class="cards"><div class="card"><h3>Practical Learning</h3><p>Build useful skills through structured learning and practical activities.</p></div><div class="card"><h3>Mentorship</h3><p>Get guidance to make better learning and career decisions.</p></div><div class="card"><h3>Career Guidance</h3><p>Explore career paths and prepare for future opportunities.</p></div><div class="card"><h3>Jobs & Internships</h3><p>Discover opportunities to take your first career step.</p></div></div></section>
@@ -43,7 +43,7 @@ label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textare
 <div class="actions"><a class="btn blue" href="https://docs.google.com/forms/d/e/1FAIpQLScRfuAGch5XlpCNaVklpsL2-sbYUgx1zGLFwiVIbmYHRZGlCQ/viewform">Student Registration Form</a></div></section>
 
 <section id="dashboard"><h2>Student Dashboard</h2><p class="sub">Your learning space — sign in to view your account modules.</p>
-<div class="module-nav"><a href="#learning">Courses</a><a href="#mentors">Mentors</a><a href="#projects">Projects</a><a href="#certificates">Certificates</a><a href="#opportunities">Opportunities</a><a href="#admin" id="adminNav" hidden>Admin</a></div>
+<div class="module-nav"><a href="#learning">Courses</a><a href="#mentors">Mentors</a><a href="#projects">Projects</a><a href="#certificates">Certificates</a><a href="#opportunities">Opportunities</a><a href="#applications">My Applications</a><a href="#admin" id="adminNav" hidden>Admin</a></div>
 <div class="panel"><h3 class="green">Welcome to your dashboard</h3><p class="small" id="dashboardWelcome">Log in to load your student dashboard.</p><p class="small">Your profile and account are connected to the EQUAL FUTURE database. Learning progress on this version is stored on this device.</p></div>
 </section>
 <section id="learning"><h2>Learning & Courses</h2><p class="sub">Courses published by EQUAL FUTURE will appear here.</p><div id="coursesList" class="data-list"></div><p id="coursesStatus" class="module-status">Log in to load courses.</p><p class="small" style="text-align:center;margin-top:12px">Sign in to enroll in published courses and apply to active opportunities.</p></section>
@@ -61,7 +61,7 @@ label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textare
 <h3 class="green">Add an Opportunity</h3>
 <label for="adminOppTitle">Opportunity title</label><input id="adminOppTitle" placeholder="job / internship">
 <label for="adminOppOrg">Organization</label><input id="adminOppOrg" placeholder="Organization name">
-<label for="adminOppType">Type</label><input id="adminOppType" placeholder="Internship / Job / Scholarship">
+<label for="adminOppType">Type</label><select id="adminOppType"><option value="job">Job</option><option value="internship">Internship</option></select>
 <label for="adminOppLocation">Location</label><input id="adminOppLocation" placeholder="Remote / Pune / India">
 <label for="adminOppLink">Application link</label><input id="adminOppLink" type="url" placeholder="https://...">
 <label for="adminOppDescription">Description</label><textarea id="adminOppDescription"></textarea>
@@ -85,6 +85,7 @@ label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textare
 <div id="adminManageList" class="data-list"></div><p id="adminManageStatus" class="module-status">Admin access required.</p></div></section>
 
 <section id="opportunities"><h2>Opportunities</h2><p class="sub">Explore your next step. Verified opportunities will be added as they become available.</p><div id="opportunitiesList" class="data-list"></div><p id="opportunitiesStatus" class="module-status">Log in to load opportunities.</p></section>
+<section id="applications"><h2>My Applications</h2><p class="sub">Track the opportunities you have applied for.</p><div id="myApplicationsList" class="data-list"></div><p id="myApplicationsStatus" class="module-status">Log in to view your applications.</p></section>
 <section id="about"><h2>Our Mission</h2><p class="sub">We believe every student deserves an equal chance to learn, grow and build a better future, regardless of their background.</p><div class="actions"><a class="btn" href="https://wa.me/919405584793?text=Hi%2C%20I%20want%20to%20know%20about%20EQUAL%20FUTURE">WhatsApp Support</a></div></section>
 </main><footer><strong>EQUAL FUTURE</strong><br>Learn. Build. Earn. Grow.<br>© 2026 EQUAL FUTURE</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -140,7 +141,7 @@ el("loginBtn").addEventListener("click",async()=>{
 el("logoutBtn").addEventListener("click",async()=>{
  const {error}=await client.auth.signOut();
  if(error){message("authStatus",error.message,true);return;}
- setAccount(null);message("authStatus","You are logged out.");message("saveStatus","");el("dashboardWelcome").textContent="Log in to load your student dashboard.";["coursesStatus","mentorsStatus","projectsStatus","certificatesStatus","opportunitiesStatus"].forEach(id=>el(id).textContent="Log in to load this section.");["coursesList","mentorsList","projectsList","certificatesList","adminStats"].forEach(id=>el(id).replaceChildren());el("adminNav").hidden=true;el("admin").hidden=true;
+ setAccount(null);message("authStatus","You are logged out.");message("saveStatus","");el("dashboardWelcome").textContent="Log in to load your student dashboard.";["coursesStatus","mentorsStatus","projectsStatus","certificatesStatus","opportunitiesStatus","myApplicationsStatus"].forEach(id=>el(id).textContent="Log in to load this section.");["coursesList","mentorsList","projectsList","certificatesList","opportunitiesList","myApplicationsList","adminStats"].forEach(id=>el(id).replaceChildren());el("adminNav").hidden=true;el("admin").hidden=true;
 });
 el("saveProfileBtn").addEventListener("click",async()=>{
  if(!currentUser){message("saveStatus","Please create an account or log in first.",true);return;}
@@ -180,7 +181,8 @@ async function loadDashboard(user){
   renderTable("mentors","mentorsList","mentorsStatus"),
   renderTable("projects","projectsList","projectsStatus",true),
   renderTable("certificates","certificatesList","certificatesStatus",true),
-  renderOpportunitiesWithApply()
+  renderOpportunitiesWithApply(),
+  renderMyApplications()
  ]);
  const {data,error}=await client.from("profiles").select("role").eq("id",user.id).maybeSingle();
  const admin=!!data&&data.role==="admin";
@@ -237,7 +239,7 @@ el("adminAddCourse")?.addEventListener("click",async()=>{
  try{if(!currentUser)throw new Error("Log in first.");const title=el("adminCourseTitle").value.trim();if(!title)throw new Error("Course title is required.");await adminCreate("courses",{title,level:el("adminCourseLevel").value.trim(),description:el("adminCourseDescription").value.trim(),published:true,created_by:currentUser.id});await adminMessage("Course published.");el("adminCourseTitle").value="";el("adminCourseLevel").value="";el("adminCourseDescription").value="";await loadDashboard(currentUser);}catch(e){await adminMessage(e.message,true);}
 });
 el("adminAddOpp")?.addEventListener("click",async()=>{
- try{if(!currentUser)throw new Error("Log in first.");const title=el("adminOppTitle").value.trim();if(!title)throw new Error("Opportunity title is required.");await adminCreate("opportunities",{title,organization:el("adminOppOrg").value.trim(),type:el("adminOppType").value.trim(),location:el("adminOppLocation").value.trim(),application_link:el("adminOppLink").value.trim(),description:el("adminOppDescription").value.trim(),active:true,created_by:currentUser.id});await adminMessage("Opportunity published.");["adminOppTitle","adminOppOrg","adminOppType","adminOppLocation","adminOppLink","adminOppDescription"].forEach(id=>el(id).value="");await loadDashboard(currentUser);}catch(e){await adminMessage(e.message,true);}
+ try{if(!currentUser)throw new Error("Log in first.");const title=el("adminOppTitle").value.trim(),type=el("adminOppType").value;if(!title)throw new Error("Opportunity title is required.");if(!["job","internship"].includes(type))throw new Error("Choose Job or Internship.");await adminCreate("opportunities",{title,organization:el("adminOppOrg").value.trim(),type,location:el("adminOppLocation").value.trim(),application_link:el("adminOppLink").value.trim(),description:el("adminOppDescription").value.trim(),active:true,created_by:currentUser.id});await adminMessage("Opportunity published.");["adminOppTitle","adminOppOrg","adminOppType","adminOppLocation","adminOppLink","adminOppDescription"].forEach(id=>el(id).value="");await loadDashboard(currentUser);}catch(e){await adminMessage(e.message,true);}
 });
 el("adminAddMentor")?.addEventListener("click",async()=>{
  try{const user_id=el("adminMentorId").value.trim();if(!/^[0-9a-f-]{36}$/i.test(user_id))throw new Error("Enter a valid account UUID.");await adminCreate("mentors",{user_id,expertise:el("adminMentorExpertise").value.trim(),bio:el("adminMentorBio").value.trim(),approved:true});await adminMessage("Mentor profile added and approved.");await refreshAdminManager();}catch(e){await adminMessage(e.message,true);}
@@ -254,10 +256,19 @@ async function renderCoursesWithEnrollments(){
  const {data:mine}=await client.from("enrollments").select("course_id,status,progress").eq("student_id",currentUser.id);
  data.forEach(course=>{const enrolled=(mine||[]).find(x=>x.course_id===course.id);const card=makeAdminCard(course.title,(course.level||"")+(course.description?" — "+course.description:"")+(enrolled?" | Your status: "+enrolled.status+" ("+enrolled.progress+"%)":""),enrolled?[]:[{label:"Enroll",run:async()=>{const {error:e}=await client.from("enrollments").insert({student_id:currentUser.id,course_id:course.id,progress:0,status:"enrolled"});message("coursesStatus",e?e.message:"You are enrolled.");if(!e)await renderCoursesWithEnrollments();}}]);box.appendChild(card);});message("coursesStatus",data.length+" course(s) available.");
 }
+async function renderMyApplications(){
+ const box=el("myApplicationsList");if(!box||!currentUser)return;box.replaceChildren();message("myApplicationsStatus","Loading...");
+ const {data,error}=await client.from("applications").select("id,status,created_at,opportunities(title,organization,type)").eq("student_id",currentUser.id).order("created_at",{ascending:false}).limit(50);
+ if(error){message("myApplicationsStatus",error.message,true);return;}
+ if(!data?.length){message("myApplicationsStatus","You have not applied to any opportunities yet.");return;}
+ data.forEach(row=>{const opp=Array.isArray(row.opportunities)?row.opportunities[0]:row.opportunities;const card=document.createElement("article");card.className="data-item";const h=document.createElement("h4");h.textContent=opp?.title||"Opportunity";card.appendChild(h);const p=document.createElement("p");p.textContent=[opp?.organization,opp?.type,row.status||"submitted",row.created_at?new Date(row.created_at).toLocaleDateString():""].filter(Boolean).join(" • ");card.appendChild(p);box.appendChild(card);});
+ message("myApplicationsStatus",data.length+" application(s) found.");
+}
+
 async function renderOpportunitiesWithApply(){
  const box=el("opportunitiesList");if(!box||!currentUser)return;const {data,error}=await client.from("opportunities").select("*").eq("active",true).limit(40);if(error){message("opportunitiesStatus",error.message,true);return;}
  box.replaceChildren();if(!data?.length){message("opportunitiesStatus","No active opportunities yet.");return;}
- data.forEach(item=>{const card=makeAdminCard(item.title,(item.organization||"")+(item.type?" | "+item.type:"")+(item.location?" | "+item.location:"")+(item.description?" — "+item.description:""),[{label:"Apply",run:async()=>{const {error:e}=await client.from("applications").insert({student_id:currentUser.id,opportunity_id:item.id,status:"submitted"});message("opportunitiesStatus",e?(e.code==="23505"?"You have already applied.":e.message):"Application submitted.");}}]);if(item.application_link){const a=document.createElement("a");a.href=item.application_link;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open application page";a.className="btn blue";card.appendChild(a);}box.appendChild(card);});message("opportunitiesStatus",data.length+" active opportunity/ies.");
+ data.forEach(item=>{const card=makeAdminCard(item.title,(item.organization||"")+(item.type?" | "+item.type:"")+(item.location?" | "+item.location:"")+(item.description?" — "+item.description:""),[{label:"Apply",run:async()=>{const {error:e}=await client.from("applications").insert({student_id:currentUser.id,opportunity_id:item.id,status:"submitted"});message("opportunitiesStatus",e?(e.code==="23505"?"You have already applied.":e.message):"Application submitted.");if(!e)await renderMyApplications();}}]);if(item.application_link){const a=document.createElement("a");a.href=item.application_link;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open application page";a.className="btn blue";card.appendChild(a);}box.appendChild(card);});message("opportunitiesStatus",data.length+" active opportunity/ies.");
 }
 
 </script>
