@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "equal-future-v1";
+const CACHE_NAME = "equal-future-v2";
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -11,7 +11,7 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key))))]));
 });
 
 self.addEventListener("fetch", event => {
