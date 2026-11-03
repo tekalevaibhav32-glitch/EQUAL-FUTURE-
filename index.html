@@ -87,57 +87,7 @@ label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textare
 <section id="opportunities"><h2>Opportunities</h2><p class="sub">Explore your next step. Verified opportunities will be added as they become available.</p><div id="opportunitiesList" class="data-list"></div><p id="opportunitiesStatus" class="module-status">Log in to load opportunities.</p></section>
 <section id="about"><h2>Our Mission</h2><p class="sub">We believe every student deserves an equal chance to learn, grow and build a better future, regardless of their background.</p><div class="actions"><a class="btn" href="https://wa.me/919405584793?text=Hi%2C%20I%20want%20to%20know%20about%20EQUAL%20FUTURE">WhatsApp Support</a></div></section>
 </main><footer><strong>EQUAL FUTURE</strong><br>Learn. Build. Earn. Grow.<br>© 2026 EQUAL FUTURE</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-async function adminMessage(text,isError=false){message("adminActionStatus",text,isError);}
-async function adminCreate(table,payload){const {error}=await client.from(table).insert(payload);if(error)throw error;}
-function makeAdminCard(title,detail,buttons=[]){const card=document.createElement("article");card.className="data-item";const h=document.createElement("h4");h.textContent=title;card.appendChild(h);const p=document.createElement("p");p.textContent=detail;card.appendChild(p);buttons.forEach(b=>{const btn=document.createElement("button");btn.className="btn darkbtn";btn.type="button";btn.textContent=b.label;btn.addEventListener("click",b.run);card.appendChild(btn);});return card;}
-async function refreshAdminManager(){
- const box=el("adminManageList");if(!box||!currentUser)return;box.replaceChildren();el("adminManageStatus").textContent="Loading management records...";
- const specs=[{table:"courses",label:"Course",flag:"published"},{table:"opportunities",label:"Opportunity",flag:"active"},{table:"mentors",label:"Mentor",flag:"approved"}];
- for(const spec of specs){
-  const {data,error}=await client.from(spec.table).select("*").order("created_at",{ascending:false}).limit(40);
-  if(error){el("adminManageStatus").textContent="Could not load "+spec.table+": "+error.message;continue;}
-  (data||[]).forEach(row=>{
-   const title=row.title||row.expertise||("Mentor "+row.user_id);
-   const enabled=!!row[spec.flag];
-   box.appendChild(makeAdminCard(spec.label+": "+title,"Status: "+(enabled?"Published / active / approved":"Draft / inactive / pending"),[
-    {label:enabled?"Unpublish / Disable":"Publish / Activate / Approve",run:async()=>{const {error:e}=await client.from(spec.table).update({[spec.flag]:!enabled}).eq("id",row.id);if(e){el("adminManageStatus").textContent=e.message;return;}await refreshAdminManager();}},
-    {label:"Delete",run:async()=>{if(!confirm("Delete this "+spec.label.toLowerCase()+"?"))return;const {error:e}=await client.from(spec.table).delete().eq("id",row.id);if(e){el("adminManageStatus").textContent=e.message;return;}await refreshAdminManager();}}
-   ]));
-  });
- }
- const {data:apps,error:appError}=await client.from("applications").select("id,status,created_at,student_id,opportunity_id").order("created_at",{ascending:false}).limit(40);
- if(!appError)(apps||[]).forEach(a=>box.appendChild(makeAdminCard("Student application", "Student: "+a.student_id+" | Opportunity: "+a.opportunity_id+" | Status: "+a.status,[{label:"Mark reviewed",run:async()=>{const {error:e}=await client.from("applications").update({status:"reviewed"}).eq("id",a.id);if(e){el("adminManageStatus").textContent=e.message;return;}await refreshAdminManager();}}])));
- el("adminManageStatus").textContent="Management records loaded. "+(apps?.length||0)+" application(s) shown.";
-}
-el("adminAddCourse")?.addEventListener("click",async()=>{
- try{if(!currentUser)throw new Error("Log in first.");const title=el("adminCourseTitle").value.trim();if(!title)throw new Error("Course title is required.");await adminCreate("courses",{title,level:el("adminCourseLevel").value.trim(),description:el("adminCourseDescription").value.trim(),published:true,created_by:currentUser.id});await adminMessage("Course published.");el("adminCourseTitle").value="";el("adminCourseLevel").value="";el("adminCourseDescription").value="";await loadDashboard(currentUser);}catch(e){await adminMessage(e.message,true);}
-});
-el("adminAddOpp")?.addEventListener("click",async()=>{
- try{if(!currentUser)throw new Error("Log in first.");const title=el("adminOppTitle").value.trim();if(!title)throw new Error("Opportunity title is required.");await adminCreate("opportunities",{title,organization:el("adminOppOrg").value.trim(),type:el("adminOppType").value.trim(),location:el("adminOppLocation").value.trim(),application_link:el("adminOppLink").value.trim(),description:el("adminOppDescription").value.trim(),active:true,created_by:currentUser.id});await adminMessage("Opportunity published.");["adminOppTitle","adminOppOrg","adminOppType","adminOppLocation","adminOppLink","adminOppDescription"].forEach(id=>el(id).value="");await loadDashboard(currentUser);}catch(e){await adminMessage(e.message,true);}
-});
-el("adminAddMentor")?.addEventListener("click",async()=>{
- try{const user_id=el("adminMentorId").value.trim();if(!/^[0-9a-f-]{36}$/i.test(user_id))throw new Error("Enter a valid account UUID.");await adminCreate("mentors",{user_id,expertise:el("adminMentorExpertise").value.trim(),bio:el("adminMentorBio").value.trim(),approved:true});await adminMessage("Mentor profile added and approved.");await refreshAdminManager();}catch(e){await adminMessage(e.message,true);}
-});
-el("adminIssueCert")?.addEventListener("click",async()=>{
- try{const student_id=el("adminCertStudent").value.trim(),title=el("adminCertTitle").value.trim();if(!/^[0-9a-f-]{36}$/i.test(student_id)||!title)throw new Error("Enter a valid student UUID and certificate title.");await adminCreate("certificates",{student_id,title,credential_url:el("adminCertUrl").value.trim()||null});await adminMessage("Certificate issued.");}catch(e){await adminMessage(e.message,true);}
-});
-el("addProjectBtn")?.addEventListener("click",async()=>{
- try{if(!currentUser)throw new Error("Log in first.");const title=el("projectTitle").value.trim();if(!title)throw new Error("Project title is required.");const {error}=await client.from("projects").insert({student_id:currentUser.id,title,description:el("projectDescription").value.trim(),project_link:el("projectLink").value.trim(),status:"submitted"});if(error)throw error;message("projectActionStatus","Project saved.");["projectTitle","projectDescription","projectLink"].forEach(id=>el(id).value="");await renderTable("projects","projectsList","projectsStatus",true);}catch(e){message("projectActionStatus",e.message,true);}
-});
-async function renderCoursesWithEnrollments(){
- const box=el("coursesList");if(!box||!currentUser)return;const {data,error}=await client.from("courses").select("*").eq("published",true).limit(40);if(error){message("coursesStatus",error.message,true);return;}
- box.replaceChildren();if(!data?.length){message("coursesStatus","No published courses yet.");return;}
- const {data:mine}=await client.from("enrollments").select("course_id,status,progress").eq("student_id",currentUser.id);
- data.forEach(course=>{const enrolled=(mine||[]).find(x=>x.course_id===course.id);const card=makeAdminCard(course.title,(course.level||"")+(course.description?" — "+course.description:"")+(enrolled?" | Your status: "+enrolled.status+" ("+enrolled.progress+"%)":""),enrolled?[]:[{label:"Enroll",run:async()=>{const {error:e}=await client.from("enrollments").insert({student_id:currentUser.id,course_id:course.id,progress:0,status:"enrolled"});message("coursesStatus",e?e.message:"You are enrolled.");if(!e)await renderCoursesWithEnrollments();}}]);box.appendChild(card);});message("coursesStatus",data.length+" course(s) available.");
-}
-async function renderOpportunitiesWithApply(){
- const box=el("opportunitiesList");if(!box||!currentUser)return;const {data,error}=await client.from("opportunities").select("*").eq("active",true).limit(40);if(error){message("opportunitiesStatus",error.message,true);return;}
- box.replaceChildren();if(!data?.length){message("opportunitiesStatus","No active opportunities yet.");return;}
- data.forEach(item=>{const card=makeAdminCard(item.title,(item.organization||"")+(item.type?" | "+item.type:"")+(item.location?" | "+item.location:"")+(item.description?" — "+item.description:""),[{label:"Apply",run:async()=>{const {error:e}=await client.from("applications").insert({student_id:currentUser.id,opportunity_id:item.id,status:"submitted"});message("opportunitiesStatus",e?(e.code==="23505"?"You have already applied.":e.message):"Application submitted.");}}]);if(item.application_link){const a=document.createElement("a");a.href=item.application_link;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open application page";a.className="btn blue";card.appendChild(a);}box.appendChild(card);});message("opportunitiesStatus",data.length+" active opportunity/ies.");
-}
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://ysbrimwqtlwhlzawglat.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_-4c7luKlschp6ryXOQLjgA_eeeaD9Q7";
@@ -259,5 +209,56 @@ client.auth.onAuthStateChange((_event,session)=>{
 });
 refreshSession();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js"));}
+
+
+async function adminMessage(text,isError=false){message("adminActionStatus",text,isError);}
+async function adminCreate(table,payload){const {error}=await client.from(table).insert(payload);if(error)throw error;}
+function makeAdminCard(title,detail,buttons=[]){const card=document.createElement("article");card.className="data-item";const h=document.createElement("h4");h.textContent=title;card.appendChild(h);const p=document.createElement("p");p.textContent=detail;card.appendChild(p);buttons.forEach(b=>{const btn=document.createElement("button");btn.className="btn darkbtn";btn.type="button";btn.textContent=b.label;btn.addEventListener("click",b.run);card.appendChild(btn);});return card;}
+async function refreshAdminManager(){
+ const box=el("adminManageList");if(!box||!currentUser)return;box.replaceChildren();el("adminManageStatus").textContent="Loading management records...";
+ const specs=[{table:"courses",label:"Course",flag:"published"},{table:"opportunities",label:"Opportunity",flag:"active"},{table:"mentors",label:"Mentor",flag:"approved"}];
+ for(const spec of specs){
+  const {data,error}=await client.from(spec.table).select("*").order("created_at",{ascending:false}).limit(40);
+  if(error){el("adminManageStatus").textContent="Could not load "+spec.table+": "+error.message;continue;}
+  (data||[]).forEach(row=>{
+   const title=row.title||row.expertise||("Mentor "+row.user_id);
+   const enabled=!!row[spec.flag];
+   box.appendChild(makeAdminCard(spec.label+": "+title,"Status: "+(enabled?"Published / active / approved":"Draft / inactive / pending"),[
+    {label:enabled?"Unpublish / Disable":"Publish / Activate / Approve",run:async()=>{const {error:e}=await client.from(spec.table).update({[spec.flag]:!enabled}).eq("id",row.id);if(e){el("adminManageStatus").textContent=e.message;return;}await refreshAdminManager();}},
+    {label:"Delete",run:async()=>{if(!confirm("Delete this "+spec.label.toLowerCase()+"?"))return;const {error:e}=await client.from(spec.table).delete().eq("id",row.id);if(e){el("adminManageStatus").textContent=e.message;return;}await refreshAdminManager();}}
+   ]));
+  });
+ }
+ const {data:apps,error:appError}=await client.from("applications").select("id,status,created_at,student_id,opportunity_id").order("created_at",{ascending:false}).limit(40);
+ if(!appError)(apps||[]).forEach(a=>box.appendChild(makeAdminCard("Student application", "Student: "+a.student_id+" | Opportunity: "+a.opportunity_id+" | Status: "+a.status,[{label:"Mark reviewed",run:async()=>{const {error:e}=await client.from("applications").update({status:"reviewed"}).eq("id",a.id);if(e){el("adminManageStatus").textContent=e.message;return;}await refreshAdminManager();}}])));
+ el("adminManageStatus").textContent="Management records loaded. "+(apps?.length||0)+" application(s) shown.";
+}
+el("adminAddCourse")?.addEventListener("click",async()=>{
+ try{if(!currentUser)throw new Error("Log in first.");const title=el("adminCourseTitle").value.trim();if(!title)throw new Error("Course title is required.");await adminCreate("courses",{title,level:el("adminCourseLevel").value.trim(),description:el("adminCourseDescription").value.trim(),published:true,created_by:currentUser.id});await adminMessage("Course published.");el("adminCourseTitle").value="";el("adminCourseLevel").value="";el("adminCourseDescription").value="";await loadDashboard(currentUser);}catch(e){await adminMessage(e.message,true);}
+});
+el("adminAddOpp")?.addEventListener("click",async()=>{
+ try{if(!currentUser)throw new Error("Log in first.");const title=el("adminOppTitle").value.trim();if(!title)throw new Error("Opportunity title is required.");await adminCreate("opportunities",{title,organization:el("adminOppOrg").value.trim(),type:el("adminOppType").value.trim(),location:el("adminOppLocation").value.trim(),application_link:el("adminOppLink").value.trim(),description:el("adminOppDescription").value.trim(),active:true,created_by:currentUser.id});await adminMessage("Opportunity published.");["adminOppTitle","adminOppOrg","adminOppType","adminOppLocation","adminOppLink","adminOppDescription"].forEach(id=>el(id).value="");await loadDashboard(currentUser);}catch(e){await adminMessage(e.message,true);}
+});
+el("adminAddMentor")?.addEventListener("click",async()=>{
+ try{const user_id=el("adminMentorId").value.trim();if(!/^[0-9a-f-]{36}$/i.test(user_id))throw new Error("Enter a valid account UUID.");await adminCreate("mentors",{user_id,expertise:el("adminMentorExpertise").value.trim(),bio:el("adminMentorBio").value.trim(),approved:true});await adminMessage("Mentor profile added and approved.");await refreshAdminManager();}catch(e){await adminMessage(e.message,true);}
+});
+el("adminIssueCert")?.addEventListener("click",async()=>{
+ try{const student_id=el("adminCertStudent").value.trim(),title=el("adminCertTitle").value.trim();if(!/^[0-9a-f-]{36}$/i.test(student_id)||!title)throw new Error("Enter a valid student UUID and certificate title.");await adminCreate("certificates",{student_id,title,credential_url:el("adminCertUrl").value.trim()||null});await adminMessage("Certificate issued.");}catch(e){await adminMessage(e.message,true);}
+});
+el("addProjectBtn")?.addEventListener("click",async()=>{
+ try{if(!currentUser)throw new Error("Log in first.");const title=el("projectTitle").value.trim();if(!title)throw new Error("Project title is required.");const {error}=await client.from("projects").insert({student_id:currentUser.id,title,description:el("projectDescription").value.trim(),project_link:el("projectLink").value.trim(),status:"submitted"});if(error)throw error;message("projectActionStatus","Project saved.");["projectTitle","projectDescription","projectLink"].forEach(id=>el(id).value="");await renderTable("projects","projectsList","projectsStatus",true);}catch(e){message("projectActionStatus",e.message,true);}
+});
+async function renderCoursesWithEnrollments(){
+ const box=el("coursesList");if(!box||!currentUser)return;const {data,error}=await client.from("courses").select("*").eq("published",true).limit(40);if(error){message("coursesStatus",error.message,true);return;}
+ box.replaceChildren();if(!data?.length){message("coursesStatus","No published courses yet.");return;}
+ const {data:mine}=await client.from("enrollments").select("course_id,status,progress").eq("student_id",currentUser.id);
+ data.forEach(course=>{const enrolled=(mine||[]).find(x=>x.course_id===course.id);const card=makeAdminCard(course.title,(course.level||"")+(course.description?" — "+course.description:"")+(enrolled?" | Your status: "+enrolled.status+" ("+enrolled.progress+"%)":""),enrolled?[]:[{label:"Enroll",run:async()=>{const {error:e}=await client.from("enrollments").insert({student_id:currentUser.id,course_id:course.id,progress:0,status:"enrolled"});message("coursesStatus",e?e.message:"You are enrolled.");if(!e)await renderCoursesWithEnrollments();}}]);box.appendChild(card);});message("coursesStatus",data.length+" course(s) available.");
+}
+async function renderOpportunitiesWithApply(){
+ const box=el("opportunitiesList");if(!box||!currentUser)return;const {data,error}=await client.from("opportunities").select("*").eq("active",true).limit(40);if(error){message("opportunitiesStatus",error.message,true);return;}
+ box.replaceChildren();if(!data?.length){message("opportunitiesStatus","No active opportunities yet.");return;}
+ data.forEach(item=>{const card=makeAdminCard(item.title,(item.organization||"")+(item.type?" | "+item.type:"")+(item.location?" | "+item.location:"")+(item.description?" — "+item.description:""),[{label:"Apply",run:async()=>{const {error:e}=await client.from("applications").insert({student_id:currentUser.id,opportunity_id:item.id,status:"submitted"});message("opportunitiesStatus",e?(e.code==="23505"?"You have already applied.":e.message):"Application submitted.");}}]);if(item.application_link){const a=document.createElement("a");a.href=item.application_link;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open application page";a.className="btn blue";card.appendChild(a);}box.appendChild(card);});message("opportunitiesStatus",data.length+" active opportunity/ies.");
+}
+
 </script>
 </body></html>
