@@ -51,7 +51,8 @@ label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textare
 <section id="projects"><h2>Projects & Portfolio</h2><p class="sub">Your project records and portfolio evidence.</p><div id="projectsList" class="data-list"></div><p id="projectsStatus" class="module-status">Log in to load projects.</p></section>
 <section id="certificates"><h2>Certificates</h2><p class="sub">Certificates issued to your account will appear here.</p><div id="certificatesList" class="data-list"></div><p id="certificatesStatus" class="module-status">Log in to load certificates.</p></section>
 <section id="admin" hidden><h2>Admin Dashboard</h2><p class="sub">Restricted to accounts explicitly assigned the admin role.</p><div class="panel"><h3 class="green">Platform overview</h3><div id="adminStats" class="data-list"></div><p id="adminStatus" class="module-status">Checking access...</p></div></section>
-\n<section id="opportunities"><h2>Opportunities</h2><p class="sub">Explore your next step. Verified opportunities will be added as they become available.</p><div id="opportunitiesList" class="data-list"></div><p id="opportunitiesStatus" class="module-status">Log in to load opportunities.</p></section>
+
+<section id="opportunities"><h2>Opportunities</h2><p class="sub">Explore your next step. Verified opportunities will be added as they become available.</p><div id="opportunitiesList" class="data-list"></div><p id="opportunitiesStatus" class="module-status">Log in to load opportunities.</p></section>
 <section id="about"><h2>Our Mission</h2><p class="sub">We believe every student deserves an equal chance to learn, grow and build a better future, regardless of their background.</p><div class="actions"><a class="btn" href="https://wa.me/919405584793?text=Hi%2C%20I%20want%20to%20know%20about%20EQUAL%20FUTURE">WhatsApp Support</a></div></section>
 </main><footer><strong>EQUAL FUTURE</strong><br>Learn. Build. Earn. Grow.<br>© 2026 EQUAL FUTURE</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -146,7 +147,8 @@ async function loadDashboard(user){
   renderTable("courses","coursesList","coursesStatus"),
   renderTable("mentors","mentorsList","mentorsStatus"),
   renderTable("projects","projectsList","projectsStatus",true),
-  renderTable("certificates","certificatesList","certificatesStatus",true),\n  renderTable("opportunities","opportunitiesList","opportunitiesStatus")
+  renderTable("certificates","certificatesList","certificatesStatus",true),
+  renderTable("opportunities","opportunitiesList","opportunitiesStatus")
  ]);
  const {data,error}=await client.from("profiles").select("role").eq("id",user.id).maybeSingle();
  const admin=!!data&&data.role==="admin";
@@ -162,7 +164,8 @@ async function loadDashboard(user){
   el("adminStatus").textContent="Admin access verified.";
  } else {el("adminStatus").textContent=""; }
 }
-\nfunction updateProgress(value){
+
+function updateProgress(value){
  el("progressBar").style.width=value+"%";el("progressText").textContent=value+"% completed";
  try{localStorage.setItem("equalFutureProgress",value);}catch(e){}
 }
