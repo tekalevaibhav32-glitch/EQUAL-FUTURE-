@@ -16,10 +16,19 @@ section{padding:45px 5%;scroll-margin-top:75px}h2{text-align:center;font-size:28
 label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #40516a;background:#101827;color:white;font-size:15px}textarea{min-height:75px;resize:vertical}
 .progress{height:12px;background:#34445a;border-radius:20px;overflow:hidden;margin:12px 0}.bar{height:100%;width:0;background:#4ade80;transition:width .3s}.small{font-size:13px;color:#aebdd0}.actions{text-align:center;margin-top:18px}.status{color:#4ade80;margin-top:10px;font-size:13px;min-height:20px}.error{color:#fca5a5}.divider{border:0;border-top:1px solid #30415b;margin:22px 0}footer{text-align:center;padding:28px 15px;border-top:1px solid #30415b;color:#93a4ba;font-size:13px}
 @media(max-width:600px){header{align-items:flex-start;gap:10px;flex-direction:column}nav{gap:12px}nav a{font-size:12px}.hero{padding-top:50px}}
+
+.module-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 auto 20px;max-width:1000px}
+.module-nav a{color:#dbeafe;background:#26364c;padding:8px 12px;border-radius:8px;text-decoration:none;font-size:13px}
+.data-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:15px}
+.data-item{background:#101827;border:1px solid #40516a;border-radius:10px;padding:15px}
+.data-item h4{color:#4ade80;margin-bottom:6px}
+.data-item p{font-size:13px;color:#bdc8d8;white-space:pre-wrap;overflow-wrap:anywhere}
+.module-status{font-size:13px;color:#aebdd0;text-align:center;margin-top:10px}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
-<header><div class="logo">EQUAL FUTURE</div><nav><a href="#home">Home</a><a href="#how">How It Works</a><a href="#hub">Student Hub</a><a href="#opportunities">Opportunities</a><a href="#about">About</a></nav></header>
+<header><div class="logo">EQUAL FUTURE</div><nav><a href="#home">Home</a><a href="#how">How It Works</a><a href="#hub">Student Hub</a><a href="#opportunities">Opportunities</a><a href="#dashboard">Dashboard</a><a href="#about">About</a></nav></header>
 <main>
 <div class="hero" id="home"><div class="tag">YOUR FUTURE STARTS HERE</div><h1>Learn. <span class="green">Build.</span><br>Earn. Grow.</h1><p>A student-powered initiative helping young people learn practical skills, build confidence and explore career opportunities.</p><a class="btn" href="#hub">Explore Student Hub</a><a class="btn blue" href="#account">Create Student Account</a></div>
 <section><h2>What We Offer</h2><div class="cards"><div class="card"><h3>Practical Learning</h3><p>Build useful skills through structured learning and practical activities.</p></div><div class="card"><h3>Mentorship</h3><p>Get guidance to make better learning and career decisions.</p></div><div class="card"><h3>Career Guidance</h3><p>Explore career paths and prepare for future opportunities.</p></div><div class="card"><h3>Jobs & Internships</h3><p>Discover opportunities to take your first career step.</p></div></div></section>
@@ -32,7 +41,17 @@ label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textare
 <section id="hub"><h2>Student Hub</h2><p class="sub">Your profile is saved securely to your account in the shared database.</p><div class="panel"><h3 class="green">My Profile</h3><p class="small" id="profileNotice">Log in to load and save your cloud profile.</p><label for="studentName">Full Name</label><input id="studentName" placeholder="Enter your name"><label for="studentCollege">College / School</label><input id="studentCollege" placeholder="Enter your college"><label for="studentSkill">Skill I want to learn</label><input id="studentSkill" placeholder="Example: Web Development"><label for="studentGoal">My Career Goal</label><textarea id="studentGoal" placeholder="Describe your goal"></textarea><div class="actions"><button class="btn" id="saveProfileBtn" type="button">Save My Profile</button></div><p id="saveStatus" class="status" role="status" aria-live="polite"></p></div>
 <div class="panel" style="margin-top:18px"><h3 class="green">My Learning Progress</h3><p class="small">This progress indicator is currently saved on this device.</p><div class="progress"><div class="bar" id="progressBar"></div></div><p id="progressText" class="small">0% completed</p><label for="progressRange">My progress (%)</label><input id="progressRange" type="range" min="0" max="100" value="0"><p class="status">Progress is saved on this device.</p></div>
 <div class="actions"><a class="btn blue" href="https://docs.google.com/forms/d/e/1FAIpQLScRfuAGch5XlpCNaVklpsL2-sbYUgx1zGLFwiVIbmYHRZGlCQ/viewform">Student Registration Form</a></div></section>
-<section id="opportunities"><h2>Opportunities</h2><p class="sub">Explore your next step. Verified opportunities will be added as they become available.</p><div class="cards"><div class="card"><h3>Internships</h3><p>Internship opportunities will be listed here when verified.</p></div><div class="card"><h3>Jobs</h3><p>Relevant entry-level job opportunities will be added here.</p></div><div class="card"><h3>Projects</h3><p>Build practical experience through projects and challenges.</p></div></div></section>
+
+<section id="dashboard"><h2>Student Dashboard</h2><p class="sub">Your learning space — sign in to view your account modules.</p>
+<div class="module-nav"><a href="#learning">Courses</a><a href="#mentors">Mentors</a><a href="#projects">Projects</a><a href="#certificates">Certificates</a><a href="#opportunities">Opportunities</a><a href="#admin" id="adminNav" hidden>Admin</a></div>
+<div class="panel"><h3 class="green">Welcome to your dashboard</h3><p class="small" id="dashboardWelcome">Log in to load your student dashboard.</p><p class="small">Your profile and account are connected to the EQUAL FUTURE database. Learning progress on this version is stored on this device.</p></div>
+</section>
+<section id="learning"><h2>Learning & Courses</h2><p class="sub">Courses published by EQUAL FUTURE will appear here.</p><div id="coursesList" class="data-list"></div><p id="coursesStatus" class="module-status">Log in to load courses.</p></section>
+<section id="mentors"><h2>Mentors</h2><p class="sub">Mentor profiles will appear here when approved and published.</p><div id="mentorsList" class="data-list"></div><p id="mentorsStatus" class="module-status">Log in to load mentors.</p></section>
+<section id="projects"><h2>Projects & Portfolio</h2><p class="sub">Your project records and portfolio evidence.</p><div id="projectsList" class="data-list"></div><p id="projectsStatus" class="module-status">Log in to load projects.</p></section>
+<section id="certificates"><h2>Certificates</h2><p class="sub">Certificates issued to your account will appear here.</p><div id="certificatesList" class="data-list"></div><p id="certificatesStatus" class="module-status">Log in to load certificates.</p></section>
+<section id="admin" hidden><h2>Admin Dashboard</h2><p class="sub">Restricted to accounts explicitly assigned the admin role.</p><div class="panel"><h3 class="green">Platform overview</h3><div id="adminStats" class="data-list"></div><p id="adminStatus" class="module-status">Checking access...</p></div></section>
+\n<section id="opportunities"><h2>Opportunities</h2><p class="sub">Explore your next step. Verified opportunities will be added as they become available.</p><div class="cards"><div class="card"><h3>Internships</h3><p>Internship opportunities will be listed here when verified.</p></div><div class="card"><h3>Jobs</h3><p>Relevant entry-level job opportunities will be added here.</p></div><div class="card"><h3>Projects</h3><p>Build practical experience through projects and challenges.</p></div></div></section>
 <section id="about"><h2>Our Mission</h2><p class="sub">We believe every student deserves an equal chance to learn, grow and build a better future, regardless of their background.</p><div class="actions"><a class="btn" href="https://wa.me/919405584793?text=Hi%2C%20I%20want%20to%20know%20about%20EQUAL%20FUTURE">WhatsApp Support</a></div></section>
 </main><footer><strong>EQUAL FUTURE</strong><br>Learn. Build. Earn. Grow.<br>© 2026 EQUAL FUTURE</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -64,7 +83,7 @@ async function refreshSession(){
  const {data,error}=await client.auth.getSession();
  if(error){message("authStatus",error.message,true);return;}
  setAccount(data.session?.user||null);
- if(data.session?.user) await loadCloudProfile(data.session.user);
+ if(data.session?.user){await loadCloudProfile(data.session.user);await loadDashboard(data.session.user);}
 }
 el("signupBtn").addEventListener("click",async()=>{
  const fullName=el("authName").value.trim(),email=el("authEmail").value.trim(),password=el("authPassword").value;
@@ -73,7 +92,7 @@ el("signupBtn").addEventListener("click",async()=>{
  const {data,error}=await client.auth.signUp({email,password,options:{data:{full_name:fullName}}});
  el("signupBtn").disabled=false;
  if(error){message("authStatus",error.message,true);return;}
- if(data.session){setAccount(data.session.user);await loadCloudProfile(data.session.user);message("authStatus","Account created. You are logged in.");}
+ if(data.session){setAccount(data.session.user);await loadCloudProfile(data.session.user);await loadDashboard(data.session.user);message("authStatus","Account created. You are logged in.");}
  else message("authStatus","Signup received. Check your email to confirm your account, then log in.");
 });
 el("loginBtn").addEventListener("click",async()=>{
@@ -83,12 +102,12 @@ el("loginBtn").addEventListener("click",async()=>{
  const {data,error}=await client.auth.signInWithPassword({email,password});
  el("loginBtn").disabled=false;
  if(error){message("authStatus",error.message,true);return;}
- setAccount(data.user);await loadCloudProfile(data.user);message("authStatus","Login successful.");
+ setAccount(data.user);await loadCloudProfile(data.user);await loadDashboard(data.user);message("authStatus","Login successful.");
 });
 el("logoutBtn").addEventListener("click",async()=>{
  const {error}=await client.auth.signOut();
  if(error){message("authStatus",error.message,true);return;}
- setAccount(null);message("authStatus","You are logged out.");message("saveStatus","");
+ setAccount(null);message("authStatus","You are logged out.");message("saveStatus","");el("dashboardWelcome").textContent="Log in to load your student dashboard.";["coursesStatus","mentorsStatus","projectsStatus","certificatesStatus"].forEach(id=>el(id).textContent="Log in to load this section.");["coursesList","mentorsList","projectsList","certificatesList","adminStats"].forEach(id=>el(id).replaceChildren());el("adminNav").hidden=true;el("admin").hidden=true;
 });
 el("saveProfileBtn").addEventListener("click",async()=>{
  if(!currentUser){message("saveStatus","Please create an account or log in first.",true);return;}
@@ -97,7 +116,53 @@ el("saveProfileBtn").addEventListener("click",async()=>{
  if(error){message("saveStatus","Could not save: "+error.message,true);return;}
  message("saveStatus","Profile saved to your EQUAL FUTURE account.");
 });
-function updateProgress(value){
+
+async function renderTable(table,target,status,ownerOnly=false){
+ const box=el(target),note=el(status);box.replaceChildren();
+ if(!currentUser){note.textContent="Log in to view this section.";return;}
+ note.textContent="Loading...";
+ let q=client.from(table).select("*").limit(30);
+ if(ownerOnly) q=q.eq("student_id",currentUser.id);
+ const {data,error}=await q;
+ if(error){note.textContent="Not available yet: "+error.message;return;}
+ if(!data||!data.length){note.textContent="No published records yet. New verified content will appear here.";return;}
+ data.forEach((row,i)=>{
+  const card=document.createElement("article");card.className="data-item";
+  const heading=document.createElement("h4");
+  heading.textContent=row.title||row.name||row.full_name||row.course_name||row.project_name||("Record "+(i+1));
+  card.appendChild(heading);
+  const ignored=new Set(["id","student_id","user_id","created_at","updated_at"]);
+  Object.entries(row).forEach(([key,value])=>{
+   if(ignored.has(key)||value===null||value==="")return;
+   const p=document.createElement("p");p.textContent=key.replace(/_/g," ")+": "+(typeof value==="object"?JSON.stringify(value):String(value));card.appendChild(p);
+  });
+  box.appendChild(card);
+ });
+ note.textContent=data.length+" record(s) loaded.";
+}
+async function loadDashboard(user){
+ el("dashboardWelcome").textContent="Welcome, "+(user.email||"student")+". Your account is active.";
+ await Promise.all([
+  renderTable("courses","coursesList","coursesStatus"),
+  renderTable("mentors","mentorsList","mentorsStatus"),
+  renderTable("projects","projectsList","projectsStatus",true),
+  renderTable("certificates","certificatesList","certificatesStatus",true)
+ ]);
+ const {data,error}=await client.from("profiles").select("role").eq("id",user.id).maybeSingle();
+ const admin=!!data&&data.role==="admin";
+ el("adminNav").hidden=!admin;el("admin").hidden=!admin;
+ if(admin){
+  const stats=el("adminStats");stats.replaceChildren();
+  for(const [label,table] of [["Students","profiles"],["Courses","courses"],["Mentors","mentors"],["Opportunities","opportunities"],["Applications","applications"]]){
+   const {count,error:e}=await client.from(table).select("*",{count:"exact",head:true});
+   const item=document.createElement("div");item.className="data-item";
+   const h=document.createElement("h4");h.textContent=label;item.appendChild(h);
+   const p=document.createElement("p");p.textContent=e?"Count unavailable":String(count??0)+" records";item.appendChild(p);stats.appendChild(item);
+  }
+  el("adminStatus").textContent="Admin access verified.";
+ } else {el("adminStatus").textContent=""; }
+}
+\nfunction updateProgress(value){
  el("progressBar").style.width=value+"%";el("progressText").textContent=value+"% completed";
  try{localStorage.setItem("equalFutureProgress",value);}catch(e){}
 }
@@ -105,7 +170,7 @@ el("progressRange").addEventListener("input",e=>updateProgress(e.target.value));
 try{el("progressRange").value=localStorage.getItem("equalFutureProgress")||"0";updateProgress(el("progressRange").value);}catch(e){}
 client.auth.onAuthStateChange((_event,session)=>{
  setAccount(session?.user||null);
- if(session?.user) setTimeout(()=>loadCloudProfile(session.user),0);
+ if(session?.user) setTimeout(async()=>{await loadCloudProfile(session.user);await loadDashboard(session.user);},0);
 });
 refreshSession();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js"));}
