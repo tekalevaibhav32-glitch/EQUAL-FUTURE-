@@ -51,7 +51,7 @@ label{display:block;margin:12px 0 5px;color:#dbeafe;font-size:14px}input,textare
 <section id="projects"><h2>Projects & Portfolio</h2><p class="sub">Your project records and portfolio evidence.</p><div id="projectsList" class="data-list"></div><p id="projectsStatus" class="module-status">Log in to load projects.</p></section>
 <section id="certificates"><h2>Certificates</h2><p class="sub">Certificates issued to your account will appear here.</p><div id="certificatesList" class="data-list"></div><p id="certificatesStatus" class="module-status">Log in to load certificates.</p></section>
 <section id="admin" hidden><h2>Admin Dashboard</h2><p class="sub">Restricted to accounts explicitly assigned the admin role.</p><div class="panel"><h3 class="green">Platform overview</h3><div id="adminStats" class="data-list"></div><p id="adminStatus" class="module-status">Checking access...</p></div></section>
-\n<section id="opportunities"><h2>Opportunities</h2><p class="sub">Explore your next step. Verified opportunities will be added as they become available.</p><div class="cards"><div class="card"><h3>Internships</h3><p>Internship opportunities will be listed here when verified.</p></div><div class="card"><h3>Jobs</h3><p>Relevant entry-level job opportunities will be added here.</p></div><div class="card"><h3>Projects</h3><p>Build practical experience through projects and challenges.</p></div></div></section>
+\n<section id="opportunities"><h2>Opportunities</h2><p class="sub">Explore your next step. Verified opportunities will be added as they become available.</p><div id="opportunitiesList" class="data-list"></div><p id="opportunitiesStatus" class="module-status">Log in to load opportunities.</p></section>
 <section id="about"><h2>Our Mission</h2><p class="sub">We believe every student deserves an equal chance to learn, grow and build a better future, regardless of their background.</p><div class="actions"><a class="btn" href="https://wa.me/919405584793?text=Hi%2C%20I%20want%20to%20know%20about%20EQUAL%20FUTURE">WhatsApp Support</a></div></section>
 </main><footer><strong>EQUAL FUTURE</strong><br>Learn. Build. Earn. Grow.<br>© 2026 EQUAL FUTURE</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -107,12 +107,12 @@ el("loginBtn").addEventListener("click",async()=>{
 el("logoutBtn").addEventListener("click",async()=>{
  const {error}=await client.auth.signOut();
  if(error){message("authStatus",error.message,true);return;}
- setAccount(null);message("authStatus","You are logged out.");message("saveStatus","");el("dashboardWelcome").textContent="Log in to load your student dashboard.";["coursesStatus","mentorsStatus","projectsStatus","certificatesStatus"].forEach(id=>el(id).textContent="Log in to load this section.");["coursesList","mentorsList","projectsList","certificatesList","adminStats"].forEach(id=>el(id).replaceChildren());el("adminNav").hidden=true;el("admin").hidden=true;
+ setAccount(null);message("authStatus","You are logged out.");message("saveStatus","");el("dashboardWelcome").textContent="Log in to load your student dashboard.";["coursesStatus","mentorsStatus","projectsStatus","certificatesStatus","opportunitiesStatus"].forEach(id=>el(id).textContent="Log in to load this section.");["coursesList","mentorsList","projectsList","certificatesList","adminStats"].forEach(id=>el(id).replaceChildren());el("adminNav").hidden=true;el("admin").hidden=true;
 });
 el("saveProfileBtn").addEventListener("click",async()=>{
  if(!currentUser){message("saveStatus","Please create an account or log in first.",true);return;}
  const profile={full_name:el("studentName").value.trim(),college:el("studentCollege").value.trim(),skill_interest:el("studentSkill").value.trim(),goal:el("studentGoal").value.trim(),updated_at:new Date().toISOString()};
- const {error}=await client.from("profiles").update(profile).eq("id",currentUser.id);
+ const {error}=await client.from("profiles").upsert({...profile,id:currentUser.id},{onConflict:"id"});
  if(error){message("saveStatus","Could not save: "+error.message,true);return;}
  message("saveStatus","Profile saved to your EQUAL FUTURE account.");
 });
@@ -146,7 +146,7 @@ async function loadDashboard(user){
   renderTable("courses","coursesList","coursesStatus"),
   renderTable("mentors","mentorsList","mentorsStatus"),
   renderTable("projects","projectsList","projectsStatus",true),
-  renderTable("certificates","certificatesList","certificatesStatus",true)
+  renderTable("certificates","certificatesList","certificatesStatus",true),\n  renderTable("opportunities","opportunitiesList","opportunitiesStatus")
  ]);
  const {data,error}=await client.from("profiles").select("role").eq("id",user.id).maybeSingle();
  const admin=!!data&&data.role==="admin";
