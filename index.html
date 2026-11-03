@@ -1,48 +1,61 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101827">
-<title>EQUAL FUTURE</title>
-  <link rel="manifest" href="/manifest.webmanifest">
+<title>EQUAL FUTURE | Learn. Build. Earn. Grow.</title>
+<link rel="manifest" href="/manifest.webmanifest">
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#101827;color:white}
-header{padding:22px 7%;display:flex;justify-content:space-between;align-items:center;background:#172235}
-.logo{font-size:23px;font-weight:bold;color:#65e6bd}
-.hero{text-align:center;padding:85px 20px}
-h1{font-size:45px;margin:10px}
-.hero p{color:#c5d0df;font-size:18px;line-height:1.6}
-.tag{color:#65e6bd;font-weight:bold}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;padding:25px 7% 60px}
-.card{background:#1d2b40;padding:25px;border-radius:15px}
-.card h2{color:#65e6bd}
-.card p{color:#c5d0df;line-height:1.5}
-footer{text-align:center;padding:25px;color:#aab6c8;background:#172235}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#101827;color:#fff;line-height:1.6}
+header{padding:22px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #293449}
+.logo{font-size:21px;font-weight:800;color:#4ade80}
+.hero{text-align:center;padding:75px 22px 55px}
+.tag{color:#4ade80;font-size:13px;letter-spacing:2px;font-weight:bold}
+h1{font-size:42px;line-height:1.15;margin:20px 0}
+h1 span{color:#4ade80}
+.hero p{color:#bdc8d8;max-width:500px;margin:0 auto 28px}
+.btn{display:inline-block;background:#4ade80;color:#101827;padding:13px 25px;border-radius:9px;text-decoration:none;font-weight:bold}
+section{padding:35px 20px}
+h2{text-align:center;font-size:27px;margin-bottom:24px}
+.cards{display:grid;gap:15px;max-width:650px;margin:auto}
+.card{background:#1c293d;padding:23px;border:1px solid #30415b;border-radius:14px}
+.card h3{color:#4ade80;margin-bottom:7px}
+.card p{color:#bdc8d8;font-size:14px}
+.about{text-align:center;color:#bdc8d8;max-width:600px;margin:auto}
+footer{text-align:center;padding:28px;color:#8c9bb0;border-top:1px solid #293449;font-size:13px}
 </style>
 </head>
-  <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js");
-  });
-}
-  </script>
 <body>
-<header><div class="logo">EQUAL FUTURE</div><div>Learn • Build • Earn</div></header>
-<section class="hero">
-<div class="tag">OPPORTUNITY FOR EVERY STUDENT</div>
-<h1>Build Your Future.</h1>
-<p>Learn practical skills, connect with mentors,<br>discover career paths and find opportunities.</p>
+<header>
+<div class="logo">EQUAL FUTURE</div>
+<div>✦</div>
+</header>
+<div class="hero">
+<div class="tag">YOUR FUTURE STARTS HERE</div>
+<h1>Learn. <span>Build.</span><br>Earn. Grow.</h1>
+<p>A student-powered initiative helping young people learn practical skills, build confidence and discover career opportunities.</p>
+<a class="btn" href="#about">Explore Our Mission</a>
+</div>
+<section>
+<h2>What We Offer</h2>
+<div class="cards">
+<div class="card"><h3>01 · Practical Learning</h3><p>Learn useful, real-world skills through practical activities and projects.</p></div>
+<div class="card"><h3>02 · Find a Mentor</h3><p>Connect with people who can guide your learning and career journey.</p></div>
+<div class="card"><h3>03 · Career Guidance</h3><p>Get direction, build confidence and prepare for your next opportunity.</p></div>
+<div class="card"><h3>04 · Jobs & Internships</h3><p>Discover relevant opportunities to take your first career step.</p></div>
+</div>
 </section>
-<section class="cards">
-<div class="card"><h2>📚 Practical Learning</h2><p>Learn useful skills through practical projects and challenges.</p></div>
-<div class="card"><h2>🤝 Find a Mentor</h2><p>Connect with people who can guide your learning journey.</p></div>
-<div class="card"><h2>🎯 Career Guidance</h2><p>Explore career paths and understand your next steps.</p></div>
-<div class="card"><h2>💼 Jobs & Internships</h2><p>Discover genuine opportunities to start your career.</p></div>
+<section id="about">
+<h2>Our Mission</h2>
+<p class="about">We believe every student deserves an equal chance to learn, grow and build a better future — regardless of their background.</p>
 </section>
-<footer>Learn. Build. Earn. Grow.<br>© EQUAL FUTURE</footer>
+<footer>© 2026 EQUAL FUTURE · Learn. Build. Earn. Grow.</footer>
+<script>
+if ("serviceWorker" in navigator) {
+window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+}
+</script>
 </body>
 </html>
