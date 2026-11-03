@@ -1,0 +1,11 @@
+
+{
+  "name": "EQUAL FUTURE",
+  "short_name": "Equal Future",
+  "description": "Learn. Build. Earn. Grow.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#101827",
+  "theme_color": "#101827"
+}
