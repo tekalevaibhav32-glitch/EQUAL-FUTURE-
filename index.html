@@ -338,7 +338,7 @@ async function searchStudentLibrary(){
   {table:"quizzes",select:"id,title,topic,description,course_id",label:"Quiz",match:r=>[r.title,r.topic,r.description].join(" ")},
   {table:"opportunities",select:"id,title,organization,type,location,description",label:"Opportunity",match:r=>[r.title,r.organization,r.type,r.location,r.description].join(" ")}
  ];
- const responses=await Promise.all(specs.map(x=>client.from(x.table).select(x.select).eq("published",true).limit(150)));
+ const responses=await Promise.all(specs.map(x=>client.from(x.table).select(x.select).eq(x.table==="opportunities"?"active":"published",true).limit(150)));
  let total=0;
  for(let i=0;i<specs.length;i++){
   const spec=specs[i],res=responses[i];if(res.error){console.warn("Student search "+spec.table,res.error.message);continue;}
